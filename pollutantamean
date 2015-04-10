@@ -1,0 +1,43 @@
+pollutantmean <- function(directory, pollutant, id = 1:332) {
+  #attempt 1: nope
+  #   first <- 1
+  #   last <- length(id)
+  #   for (id in first:last){
+  #     data <- read.csv(directory)
+  #     bad <- is.na(data$sulfate)
+  #     good <- data$sulfate[!bad]
+  #     mean(good)
+  #   }
+  
+#   #attempt 2 WRONG RESULT!!! by http://stackoverflow.com/questions/23098699/calculate-the-mean-of-one-column-from-several-csv-files-in-r
+#   #tested and re-tested every line, so I know how to reproduce it
+#   files <- sprintf("%03d.csv", id) 
+#   
+#   files <- paste(directory,files,sep="/")
+#   
+#   ldf <- lapply(filenames, read.csv)
+#   #lapply uses FUN to read all files into a single large vector
+#   
+#   df=ldply(ldf)
+#   #ldply is a function from plyr that splits the list, applies a function and retur the results to this vector
+#   #must download from cran http://cran.r-project.org/web/packages/plyr/ 
+#   
+#   mean(df[, pollutant], na.rm = TRUE)
+
+  # Attempt 3 the right one dude.
+  files <- sprintf("%03d.csv", id)
+  #this function standardizes the format I want, so that no mater what the vector ID is, we have the file names right
+  files <- paste(directory,files,sep="/")
+  #this concatenates the directory and the files in a vector that lists all file names correctly
+  first <- 1
+  last <- length(id)
+  #x <- read.csv(files[1])
+  y <- data.frame(NA,NA,NA,NA)
+  colnames(y) <- c("Date","sulfate","nitrate","ID")
+  for (i in first:last){
+    x <- read.csv(files[i]) 
+    y <- rbind(y,x)
+  }
+  mean(y[, pollutant], na.rm = TRUE)
+  #this gives the mean of the selectec pollutant column, eliminating NAs with the rm
+}
