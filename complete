@@ -1,0 +1,37 @@
+complete <- function(directory, id = 1:332) {
+  files <- sprintf("%03d.csv", id)
+  #this function standardizes the format I want, so that no mater what the vector ID is, we have the file names right
+  files <- paste(directory,files,sep="/")
+  #this concatenates the directory and the files in a vector that lists all file names correctly
+  first <- 1
+  last <- length(id)
+  j <- 0
+  for (i in first:last){
+    x <- read.csv(files[i]) 
+    
+    check1 <- x$sulfate[!is.na(x$sulfate)]
+    check2 <- x$sulfate[!is.na(x$nitrate)]
+    check3 <- x$nitrate[!is.na(x$sulfate)]
+    check4 <- x$nitrate[!is.na(x$nitrate)]
+    
+    nobs <- if((length(check1) <= length(check2))&(length(check1)<=length(check3))&(length(check1) <= length(check4))){
+              length(check1)
+    } else if((length(check2) <= length(check3))&(length(check2)<=length(check4))){
+      length(check2)
+    } else if (length(check3) <= length(check4)){
+      length(check3)
+    } else{
+      length(check4)
+    }
+    
+    y <- data.frame(x$ID[1],nobs)
+    colnames(y) <- c("id","nobs")
+    if (j >0) {
+      z <- rbind(z,y) 
+    } else {
+      z <- y
+    }
+    j <- j + 1
+  }
+  z
+}
